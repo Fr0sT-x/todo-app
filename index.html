@@ -4,65 +4,252 @@
     <meta charset="UTF-8">
     <title>Game To-Do App</title>
     <style>
+        html, body {
+            height: 100%;
+            min-height: 100%;
+            margin: 0;
+            padding: 0;
+        }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #fff;
-            color: #222;
-            max-width: 600px;
-            margin: 40px auto;
-            text-align: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: #f8fafc;
+            color: #1a202c;
+            max-width: 680px;
+            margin: 0;
+            padding: 0 20px 0 0;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        /* Full viewport background image using pseudo-element */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            z-index: -1;
+            background: inherit;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background-image 0.3s;
         }
 
         h1 {
             margin-top: 20px;
-            font-weight: 700;
-            letter-spacing: 1px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
         }
 
-        .stats {
-            background: #f9f9fb;
-            padding: 22px 18px;
-            border-radius: 18px;
-            margin-bottom: 28px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        .profile-section {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 32px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
             display: flex;
-            justify-content: space-around;
             align-items: center;
             gap: 24px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .profile-avatar-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 600;
+            opacity: 0;
+            transition: opacity 0.2s;
+            border-radius: 50%;
+        }
+        .profile-avatar:hover .profile-avatar-overlay {
+            opacity: 1;
+        }
+        .hidden-file-input {
+            display: none;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 12px;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .stat-group {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #718096;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #4299e1;
+            border-radius: 8px;
+            transition: width 0.3s ease;
+        }
+
+        .health-bar .progress-fill {
+            background: #48bb78;
+        }
+
+        .stat-text {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .level-display {
+            background: #ffd700;
+            color: #744210;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
         }
 
         button {
-            padding: 10px 22px;
+            padding: 12px 24px;
             margin: 5px;
             border: none;
             border-radius: 8px;
-            background: linear-gradient(90deg, #4f8cff 0%, #6edbff 100%);
-            color: #fff;
-            font-weight: 600;
-            font-size: 15px;
+            background: #4299e1;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(79,140,255,0.08);
-            transition: background 0.2s, transform 0.1s;
+            transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
         button:hover {
-            background: linear-gradient(90deg, #3576e0 0%, #4fc3f7 100%);
-            transform: translateY(-2px) scale(1.03);
+            background: #3182ce;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        button.secondary:hover {
+            background: #cbd5e0;
         }
 
         input {
-            padding: 10px 12px;
+            padding: 12px 16px;
             margin: 5px;
             width: 60%;
-            border: 1.5px solid #e0e6ed;
+            border: 1px solid #e2e8f0;
             border-radius: 8px;
-            font-size: 15px;
-            background: #f7fafd;
-            transition: border 0.2s;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
         input:focus {
-            border: 1.5px solid #4f8cff;
+            border-color: #4299e1;
             outline: none;
-            background: #fff;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        textarea {
+            padding: 12px 16px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        textarea:focus {
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        select {
+            padding: 12px 16px;
+            margin: 5px 0;
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        select:focus {
+            border-color: #4299e1;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
         }
 
         ul {
@@ -71,169 +258,1396 @@
         }
 
         li {
-            background: #f7fafd;
-            margin: 8px 0;
-            padding: 12px 18px;
+            background: white;
+            margin: 12px 0;
+            padding: 16px 20px;
             border-radius: 12px;
             display: flex;
-            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+        li:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .task-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #cbd5e0;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .task-checkbox:hover {
+            border-color: #4299e1;
+            background: #ebf8ff;
+        }
+
+        .task-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: #2d3748;
+        }
+
+        .task-description {
+            font-size: 13px;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: 12px;
             align-items: center;
-            box-shadow: 0 1px 6px rgba(0,0,0,0.04);
-            font-size: 16px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+
+        .priority-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .priority-medium {
+            background: #feebc8;
+            color: #dd6b20;
+        }
+
+        .priority-low {
+            background: #c6f6d5;
+            color: #38a169;
+        }
+
+        .due-date {
+            color: #718096;
+        }
+
+        .due-date.overdue {
+            color: #e53e3e;
+            font-weight: 600;
+        }
+
+        .due-date.due-soon {
+            color: #dd6b20;
+            font-weight: 600;
         }
 
         .inventory {
-            margin-top: 28px;
+            margin-top: 32px;
             text-align: left;
-            background: #f9f9fb;
+            background: white;
             border-radius: 16px;
-            padding: 18px 20px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
         }
 
         .inventory h2 {
             margin-top: 0;
             font-size: 20px;
             font-weight: 600;
+            color: #2d3748;
         }
 
         #inventoryList li {
-            background: #fff;
-            border: 1px solid #e0e6ed;
-            margin: 6px 0;
-            padding: 10px 14px;
-            border-radius: 10px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            margin: 8px 0;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 4px solid transparent;
+        }
+
+        .inventory-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .item-name {
+            font-weight: 600;
             font-size: 15px;
         }
 
+        .item-rarity {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .item-description {
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .item-category {
+            font-size: 10px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
         .popup {
-            /* unchanged, keep your popup styles */
-        }
-
-        .levelup .popup-inner {
-            /* unchanged */
-        }
-
-        .loot-container {
-            /* unchanged */
-        }
-
-        .loot-card {
-            background: #fff;
-            padding: 10px 16px;
-            border-radius: 12px;
-            box-shadow: 0 4px 16px rgba(79,140,255,0.13);
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .show-levelup { animation: popIn 560ms ease forwards; }
-        .hide-levelup { animation: popOut 400ms ease forwards; }
-        .show-loot { animation: lootFloat 1400ms cubic-bezier(.2,.9,.3,1) forwards; }
-
-        /* Top bar styles */
-        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
             display: flex;
             align-items: center;
-            background: #f4f7fb;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .popup.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-inner {
+            background: white;
+            padding: 32px;
             border-radius: 16px;
-            margin-bottom: 28px;
-            padding: 0 18px;
-            height: 54px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-            gap: 24px;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            transform: scale(0.9);
+            transition: transform 0.3s;
         }
-        .topbar .app-title {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: #3576e0;
-            margin-right: 32px;
+
+        .popup.show .popup-inner {
+            transform: scale(1);
         }
-        .topbar .tabs {
+
+        .popup h3 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 24px;
+            font-weight: 600;
+            text-align: center;
+            color: #2d3748;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: calc(100% - 32px);
+            margin: 0;
+        }
+
+        .tab-group {
             display: flex;
             gap: 8px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
         }
-        .topbar .tab-btn {
+
+        .tab-option {
+            padding: 8px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .tab-option:hover {
+            border-color: #cbd5e0;
+            transform: translateY(-1px);
+        }
+
+        .tab-option.active {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            color: #2b6cb0;
+        }
+
+        .date-tab-option.active {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            color: #2b6cb0;
+        }
+
+        .priority-tab-option.low {
+            border-color: #68d391;
+            color: #38a169;
+        }
+        .priority-tab-option.low.active {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+
+        .priority-tab-option.medium {
+            border-color: #f6e05e;
+            color: #d69e2e;
+        }
+        .priority-tab-option.medium.active {
+            background: #fffff0;
+            border-color: #d69e2e;
+        }
+
+        .priority-tab-option.high {
+            border-color: #fc8181;
+            color: #e53e3e;
+        }
+        .priority-tab-option.high.active {
+            background: #fff5f5;
+            border-color: #e53e3e;
+        }
+
+        .date-input-container {
+            display: none;
+            margin-top: 12px;
+        }
+        .date-input-container.show {
+            display: block;
+        }
+
+        .date-preview {
+            font-size: 12px;
+            color: #718096;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 180px;
+            height: 100vh;
+            background: #fff;
+            border-right: 2px solid #e2e8f0;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            z-index: 200;
+        }
+        .sidebar .app-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #174a8b;
+            padding: 28px 0 18px 0;
+            text-align: center;
+            letter-spacing: -1px;
+            border-bottom: 1.5px solid #e2e8f0;
+            margin-bottom: 8px;
+        }
+        .sidebar .tabs {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            margin-top: 12px;
+        }
+        .sidebar .tab-btn {
             background: none;
             border: none;
             font-size: 16px;
-            font-weight: 600;
-            color: #3576e0;
-            padding: 8px 18px;
-            border-radius: 8px;
+            font-weight: 500;
+            color: #718096;
+            padding: 18px 0;
+            border-radius: 0;
             cursor: pointer;
             transition: background 0.18s, color 0.18s;
+            margin: 0;
+            box-shadow: none;
+            width: 100%;
+            text-align: left;
+            padding-left: 32px;
+            border-left: 4px solid transparent;
+            border-bottom: 1px solid #f1f5fb;
         }
-        .topbar .tab-btn.active, .topbar .tab-btn:focus {
-            background: #e3edfa;
+        .sidebar .tab-btn:last-child {
+            border-bottom: none;
+        }
+        .sidebar .tab-btn:hover {
+            background: #f7fafc;
             color: #174a8b;
+        }
+        .sidebar .tab-btn.active {
+            background: #f1f5fb;
+            color: #174a8b;
+            border-left: 4px solid #4299e1;
+        }
+        .sidebar .sidebar-bottom {
+            margin-top: auto;
+            padding: 18px 0 24px 0;
+            text-align: center;
+        }
+        .sidebar .sidebar-bottom button {
+            width: 80%;
+        }
+
+        /* Main content area shifts right */
+        .main-content {
+            margin-left: 180px;
+            padding-top: 40px;
+            max-width: 680px;
+            margin-right: auto;
+            padding-left: 20px;
+            padding-right: 20px;
         }
 
         /* Hide tab content by default */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Remove old topbar styles */
+        .topbar, .topbar-spacer {
+            display: none !important;
+        }
+
+        /* Placeholder for future styles */
+        .task-actions {
+            display: flex;
+            gap: 8px;
+            flex-direction: column;
+        }
+
+        .task-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .edit-task-btn {
+            background: #e2e8f0 !important;
+            color: #4a5568 !important;
+            font-size: 16px !important;
+            line-height: 1 !important;
+            padding: 4px 8px !important;
+        }
+
+        .edit-task-btn:hover {
+            background: #cbd5e0 !important;
+            transform: translateY(-1px);
+        }
     </style>
 
 </head>
 <body>
-<!-- Top Bar -->
-<div class="topbar">
-    <span class="app-title">To-do app</span>
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="app-title">To-do app</div>
     <div class="tabs">
         <button class="tab-btn active" data-tab="todoTab">To-Do</button>
         <button class="tab-btn" data-tab="shopTab">Shop</button>
         <button class="tab-btn" data-tab="inventoryTab">Inventory</button>
     </div>
-</div>
-
-<!-- To-Do Tab Content -->
-<div id="todoTab" class="tab-content active">
-    <div class="stats">
-        <p>Level: <span id="level">1</span></p>
-        <p>XP: <span id="xp">0</span> / <span id="xpToNext">100</span></p>
-    </div>
-
-    <div>
-        <input id="taskInput" type="text" placeholder="Enter a new task..." />
-        <button id="addTaskBtn">Add Task</button>
-    </div>
-
-    <h2>Your Tasks</h2>
-    <ul id="taskList"></ul>
-</div>
-
-<!-- Shop Tab Content -->
-<div id="shopTab" class="tab-content">
-    <h2>Shop</h2>
-    <p>Coming soon!</p>
-</div>
-
-<!-- Inventory Tab Content -->
-<div id="inventoryTab" class="tab-content">
-    <div class="inventory">
-        <h2>Inventory</h2>
-        <ul id="inventoryList"></ul>
+    <div class="sidebar-bottom">
+        <button id="bgImageBtn" class="secondary">Background</button>
+        <input type="file" id="bgImageInput" accept="image/*" style="display:none;">
     </div>
 </div>
 
-<script src="LevelManager.js"></script>
-<script src="LootManager.js"></script>
-<script src="InventoryManager.js"></script>
-<script src="ui.js"></script>
+<div class="main-content">
+    <!-- To-Do Tab Content -->
+    <div id="todoTab" class="tab-content active">
+        <div class="profile-section" style="position:relative;overflow:hidden;">
+            <!-- Landscape image background covers the whole profile-section -->
+            <div id="statsLandscapeBg"
+                 style="position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;object-fit:cover;background:#e2e8f0;">
+            </div>
+            <!-- Landscape upload button, always visible in top-right -->
+            <div style="position:absolute;top:8px;right:8px;z-index:2;">
+                <button id="landscapeBtn" class="secondary" style="padding:4px 12px;font-size:12px;">Landscape</button>
+                <input type="file" id="landscapeInput" accept="image/*" style="display:none;">
+            </div>
+            <!-- All profile content overlays the landscape -->
+            <div style="position:relative;z-index:1;display:flex;align-items:center;gap:24px;width:100%;">
+                <div class="profile-avatar" id="profileAvatar">
+                    A
+                </div>
+                <input type="file" id="avatarInput" class="hidden-file-input" accept="image/*">
+                <div class="profile-info" style="flex:1;">
+                    <div class="profile-name" id="profileNameContainer">
+                        <span id="profileName">Adventurer</span>
+                        <button class="edit-name-btn" id="editNameBtn" title="Edit name">✏️</button>
+                    </div>
+                    <div class="stats-container" style="display:flex;gap:24px;align-items:center;">
+                        <div class="stat-group">
+                            <div class="stat-label">Health</div>
+                            <div class="progress-bar health-bar">
+                                <div class="progress-fill" id="healthBar" style="width: 100%"></div>
+                            </div>
+                            <div class="stat-text"><span id="health">100</span> / <span id="maxHealth">100</span> HP</div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-label">Experience</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="xpBar" style="width: 0%"></div>
+                            </div>
+                            <div class="stat-text"><span id="xp">0</span> / <span id="xpToNext">100</span> XP</div>
+                        </div>
+                        <div class="level-display">
+                            Level <span id="level">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<!-- LOOT POPUP (floating) -->
-<div id="lootContainer" class="loot-container" aria-hidden="true"></div>
+        <div class="add-task-section">
+            <button id="addTaskBtn">Add Task</button>
+        </div>
 
-<!-- LEVEL-UP POPUP -->
-<div id="levelUpPopup" class="popup levelup" aria-hidden="true">
-    <div class="popup-inner">
-        <div class="star">✨</div>
-        <div class="text">Level Up!</div>
-        <div id="newLevelText" class="new-level"></div>
+        <h2>Your Tasks</h2>
+        <ul id="taskList"></ul>
     </div>
-</div>
+
+    <!-- Shop Tab Content -->
+    <div id="shopTab" class="tab-content">
+        <div style="text-align: center; padding: 60px 20px;">
+            <h2>Shop</h2>
+            <p style="color: #718096; font-size: 16px;">Coming soon! Purchase power-ups and cosmetics here.</p>
+        </div>
+    </div>
+
+    <!-- Inventory Tab Content -->
+    <div id="inventoryTab" class="tab-content">
+        <div class="inventory">
+            <h2>Inventory</h2>
+            <ul id="inventoryList"></ul>
+        </div>
+    </div>
+
+    <!-- Task Form Popup -->
+    <div id="taskPopup" class="popup">
+        <div class="popup-inner">
+            <h3>Add New Task</h3>
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskName">Task Name</label>
+                    <input type="text" id="taskName" name="taskName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description</label>
+                    <textarea id="taskDescription" name="taskDescription" placeholder="Optional description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <div class="tab-group" id="dateTabGroup">
+                        <div class="tab-option date-tab-option active" data-date="none">No due date</div>
+                        <div class="tab-option date-tab-option" data-date="today">Today</div>
+                        <div class="tab-option date-tab-option" data-date="tomorrow">Tomorrow</div>
+                        <div class="tab-option date-tab-option" data-date="nextweek">Next week</div>
+                        <div class="tab-option date-tab-option" data-date="custom">Select date</div>
+                    </div>
+                    <div class="date-preview" id="datePreview"></div>
+                    <div class="date-input-container" id="dateInputContainer">
+                        <input type="date" id="taskDueDate" name="taskDueDate">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Priority</label>
+                    <div class="tab-group" id="priorityTabGroup">
+                        <div class="tab-option priority-tab-option low" data-priority="low">Low</div>
+                        <div class="tab-option priority-tab-option medium active" data-priority="medium">Medium</div>
+                        <div class="tab-option priority-tab-option high" data-priority="high">High</div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="secondary" id="cancelTaskBtn">Cancel</button>
+                    <button type="submit" id="saveTaskBtn">Save Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Placeholder Scripts -->
+    <script>
+        // Task management
+        let tasks = [];
+        let taskIdCounter = 1;
+
+        // Placeholder managers - these would normally be in separate files
+        class LevelManager {
+            constructor() {
+                this.level = 1;
+                this.xp = 0;
+                this.xpToNext = 100;
+                this.health = 100;
+                this.maxHealth = 100;
+                this.updateDisplay();
+            }
+
+            addXP(amount) {
+                this.xp += amount;
+                let leveledUp = false;
+
+                while (this.xp >= this.xpToNext) {
+                    this.xp -= this.xpToNext;
+                    this.level++;
+                    leveledUp = true;
+                    this.xpToNext = Math.floor(this.xpToNext * 1.2);
+                    // Restore some health on level up
+                    this.health = Math.min(this.maxHealth, this.health + 20);
+                }
+
+                this.updateDisplay();
+
+                if (leveledUp) {
+                    this.showLevelUpPopup();
+                }
+            }
+
+            loseHealth(amount) {
+                this.health = Math.max(0, this.health - amount);
+                this.updateDisplay();
+            }
+
+            updateDisplay() {
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('xp').textContent = this.xp;
+                document.getElementById('xpToNext').textContent = this.xpToNext;
+                document.getElementById('health').textContent = this.health;
+                document.getElementById('maxHealth').textContent = this.maxHealth;
+
+                // Update progress bars
+                const xpPercentage = (this.xp / this.xpToNext) * 100;
+                const healthPercentage = (this.health / this.maxHealth) * 100;
+
+                document.getElementById('xpBar').style.width = `${xpPercentage}%`;
+                document.getElementById('healthBar').style.width = `${healthPercentage}%`;
+            }
+
+            showLevelUpPopup() {
+                const popup = document.getElementById('levelUpPopup');
+                const newLevelText = document.getElementById('newLevelText');
+                newLevelText.textContent = `Level ${this.level}!`;
+
+                popup.classList.add('show-levelup');
+                popup.setAttribute('aria-hidden', 'false');
+
+                setTimeout(() => {
+                    popup.classList.remove('show-levelup');
+                    popup.classList.add('hide-levelup');
+
+                    setTimeout(() => {
+                        popup.classList.remove('hide-levelup');
+                        popup.setAttribute('aria-hidden', 'true');
+                    }, 400);
+                }, 2000);
+            }
+        }
+
+        class LootManager {
+            constructor() {
+                this.rarities = [
+                    { name: "Mythic", color: "#e53935", chance: 1 },
+                    { name: "Legendary", color: "#ffd700", chance: 5 },
+                    { name: "Epic", color: "#8e24aa", chance: 10 },
+                    { name: "Rare", color: "#1976d2", chance: 25 },
+                    { name: "Uncommon", color: "#43a047", chance: 40 },
+                    { name: "Common", color: "#ffffff", chance: 60 }
+                ];
+
+                this.lootTable = [
+                    { name: "Health Potion", rarity: "Common", description: "Restores 20 HP", category: "Potion" },
+                    { name: "Mana Potion", rarity: "Common", description: "Restores 20 MP", category: "Potion" },
+                    { name: "Stamina Potion", rarity: "Common", description: "Restores 20 Stamina", category: "Potion" },
+                    { name: "Elixir of Wisdom", rarity: "Uncommon", description: "Grants 50 XP", category: "Elixir" },
+                    { name: "Elixir of Power", rarity: "Uncommon", description: "Increases strength by 5", category: "Elixir" },
+                    { name: "Ring of Protection", rarity: "Rare", description: "Increases defense by 5", category: "Accessory" },
+                    { name: "Amulet of Health", rarity: "Rare", description: "Increases max HP by 10%", category: "Accessory" },
+                    { name: "Cloak of Invisibility", rarity: "Epic", description: "Renders you invisible for 30 seconds", category: "Cloak" },
+                    { name: "Boots of Speed", rarity: "Epic", description: "Increases movement speed by 50%", category: "Footwear" },
+                    { name: "Sword of Destiny", rarity: "Legendary", description: "A powerful sword that deals extra damage", category: "Weapon" },
+                    { name: "Shield of Valor", rarity: "Legendary", description: "A sturdy shield that blocks extra damage", category: "Armor" },
+                    { name: "Crown of the Champion", rarity: "Mythic", description: "Increases all stats by 10%", category: "Head" },
+                    { name: "Armor of the Gods", rarity: "Mythic", description: "Provides massive protection and reflects damage", category: "Armor" }
+                ];
+            }
+
+            generateLoot() {
+                const roll = Math.random() * 100;
+                let cumulative = 0;
+                let rarity = null;
+
+                for (let r of this.rarities) {
+                    cumulative += r.chance;
+                    if (roll <= cumulative) {
+                        rarity = r;
+                        break;
+                    }
+                }
+                if (!rarity) return null;
+
+                // Filter loot by rarity, pick random
+                const possibleLoot = this.lootTable.filter(item => item.rarity === rarity.name);
+                if (possibleLoot.length === 0) return null;
+                const item = possibleLoot[Math.floor(Math.random() * possibleLoot.length)];
+                // Return all needed fields for inventory display
+                return {
+                    name: item.name,
+                    rarity: rarity.name,
+                    color: rarity.color,
+                    description: item.description,
+                    category: item.category
+                };
+            }
+
+            showLoot(loot) {
+                if (!loot) return;
+                const container = document.getElementById('lootContainer');
+                const lootCard = document.createElement('div');
+                lootCard.className = 'loot-card show-loot';
+                lootCard.innerHTML = `<span style="color:${loot.color};font-weight:bold">${loot.name}</span> <span style="font-size:13px; color:${loot.color};">[${loot.rarity}]</span>`;
+                container.appendChild(lootCard);
+                container.setAttribute('aria-hidden', 'false');
+                setTimeout(() => {
+                    container.removeChild(lootCard);
+                    container.setAttribute('aria-hidden', 'true');
+                }, 1400);
+            }
+        }
+
+        class InventoryManager {
+            constructor() {
+                this.items = {};
+                this.updateDisplay();
+            }
+
+            addItem(item) {
+                const itemKey = `${item.name}_${item.rarity}`;
+                if (this.items[itemKey]) {
+                    this.items[itemKey].count++;
+                } else {
+                    this.items[itemKey] = {
+                        ...item,
+                        count: 1
+                    };
+                }
+                this.updateDisplay();
+            }
+
+            clearInventory() {
+                this.items = {};
+                this.updateDisplay();
+                console.log("🧹 Inventory wiped clean.");
+            }
+
+            updateDisplay() {
+                const inventoryList = document.getElementById('inventoryList');
+                inventoryList.innerHTML = '';
+
+                if (Object.keys(this.items).length === 0) {
+                    const emptyItem = document.createElement('li');
+                    emptyItem.innerHTML = '<span style="font-style: italic; color: #a0aec0;">No items yet. Complete tasks to earn loot!</span>';
+                    emptyItem.style.textAlign = 'center';
+                    inventoryList.appendChild(emptyItem);
+                    return;
+                }
+
+                // Sort items by rarity (Mythic first, Common last)
+                const rarityOrder = { "Mythic": 6, "Legendary": 5, "Epic": 4, "Rare": 3, "Uncommon": 2, "Common": 1 };
+                const sortedItems = Object.values(this.items).sort((a, b) => {
+                    return rarityOrder[b.rarity] - rarityOrder[a.rarity];
+                });
+
+                sortedItems.forEach(item => {
+                    const listItem = document.createElement('li');
+                    listItem.style.borderLeftColor = item.color;
+
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'inventory-item';
+
+                    const headerDiv = document.createElement('div');
+                    headerDiv.className = 'item-header';
+
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'item-name';
+                    nameSpan.style.color = item.color;
+                    nameSpan.textContent = `${item.name} ${item.count > 1 ? `x${item.count}` : ''}`;
+
+                    const raritySpan = document.createElement('span');
+                    raritySpan.className = 'item-rarity';
+                    raritySpan.style.color = item.color;
+                    raritySpan.style.borderColor = item.color;
+                    raritySpan.textContent = item.rarity;
+
+                    headerDiv.appendChild(nameSpan);
+                    headerDiv.appendChild(raritySpan);
+
+                    const descDiv = document.createElement('div');
+                    descDiv.className = 'item-description';
+                    descDiv.textContent = item.description;
+
+                    const categoryDiv = document.createElement('div');
+                    categoryDiv.className = 'item-category';
+                    categoryDiv.textContent = item.category;
+
+                    itemDiv.appendChild(headerDiv);
+                    itemDiv.appendChild(descDiv);
+                    itemDiv.appendChild(categoryDiv);
+
+                    listItem.appendChild(itemDiv);
+                    inventoryList.appendChild(listItem);
+                });
+            }
+        }
+
+        // Initialize managers
+        const levelManager = new LevelManager();
+        const lootManager = new LootManager();
+        const inventoryManager = new InventoryManager();
+
+        // UI Elements
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const taskPopup = document.getElementById('taskPopup');
+        const taskForm = document.getElementById('taskForm');
+        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+        const taskList = document.getElementById('taskList');
+
+        // Add missing task management functions
+        function addTask(name, description, dueDate, priority) {
+            const task = {
+                id: taskIdCounter++,
+                name,
+                description,
+                dueDate,
+                priority,
+                completed: false
+            };
+
+            console.log('Adding task:', task);
+            tasks.push(task);
+            renderTasks();
+            saveTasksToStorage();
+        }
+
+        function completeTask(taskId) {
+            const taskIndex = tasks.findIndex(task => task.id === taskId);
+            if (taskIndex !== -1) {
+                const task = tasks[taskIndex];
+                console.log(`✅ Completed: ${task.name}`);
+
+                // Remove task from array
+                tasks.splice(taskIndex, 1);
+
+                // Add XP and loot
+                levelManager.addXP(50);
+                const loot = lootManager.generateLoot();
+                if (loot) {
+                    lootManager.showLoot(loot);
+                    inventoryManager.addItem(loot);
+                }
+
+                renderTasks();
+                saveTasksToStorage();
+            }
+        }
+
+        function deleteTask(taskId) {
+            const taskIndex = tasks.findIndex(task => task.id === taskId);
+            if (taskIndex !== -1) {
+                tasks.splice(taskIndex, 1);
+                renderTasks();
+                saveTasksToStorage();
+            }
+        }
+
+        // Task editing
+        let editingTaskId = null;
+
+        function openEditTaskPopup(task) {
+            editingTaskId = task.id;
+
+            // Update popup title
+            document.querySelector('#taskPopup h3').textContent = 'Edit Task';
+
+            // Fill form with existing data
+            document.getElementById('taskName').value = task.name;
+            document.getElementById('taskDescription').value = task.description || '';
+            document.getElementById('taskDueDate').value = task.dueDate || '';
+
+            // Set priority
+            selectedPriority = task.priority || 'medium';
+            updatePriorityTabs();
+
+            // Set date tab based on existing due date
+            if (!task.dueDate) {
+                selectedDate = 'none';
+            } else {
+                const today = new Date();
+                const due = new Date(task.dueDate);
+                const diffDays = Math.round((due - today) / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 0) {
+                    selectedDate = 'today';
+                } else if (diffDays === 1) {
+                    selectedDate = 'tomorrow';
+                } else if (diffDays === 7) {
+                    selectedDate = 'nextweek';
+                } else {
+                    selectedDate = 'custom';
+                }
+            }
+            updateDateTabs();
+
+            taskPopup.classList.add('show');
+            document.getElementById('taskName').focus();
+        }
+
+        function updateTask(taskId, name, description, dueDate, priority) {
+            const taskIndex = tasks.findIndex(task => task.id === taskId);
+            if (taskIndex !== -1) {
+                tasks[taskIndex].name = name;
+                tasks[taskIndex].description = description;
+                tasks[taskIndex].dueDate = dueDate;
+                tasks[taskIndex].priority = priority;
+                renderTasks();
+                saveTasksToStorage();
+            }
+        }
+
+        function renderTasks() {
+            console.log('Rendering tasks:', tasks);
+            taskList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                const emptyItem = document.createElement('li');
+                emptyItem.innerHTML = '<span style="font-style: italic; color: #a0aec0;">No tasks yet. Click "Add Task" to get started!</span>';
+                emptyItem.style.justifyContent = 'center';
+                emptyItem.style.textAlign = 'center';
+                taskList.appendChild(emptyItem);
+                return;
+            }
+
+            // Sort tasks by priority and due date
+            const priorityOrder = { high: 3, medium: 2, low: 1 };
+            tasks.sort((a, b) => {
+                if (priorityOrder[b.priority] !== priorityOrder[a.priority]) {
+                    return priorityOrder[b.priority] - priorityOrder[a.priority];
+                }
+                if (a.dueDate && b.dueDate) {
+                    return new Date(a.dueDate) - new Date(b.dueDate);
+                }
+                if (a.dueDate && !b.dueDate) return -1;
+                if (!a.dueDate && b.dueDate) return 1;
+                return 0;
+            });
+
+            tasks.forEach(task => {
+                const listItem = document.createElement('li');
+
+                // Add completion circle
+                const checkbox = document.createElement('div');
+                checkbox.className = 'task-checkbox';
+                checkbox.onclick = () => completeTask(task.id);
+                listItem.appendChild(checkbox);
+
+                const taskContent = document.createElement('div');
+                taskContent.className = 'task-content';
+
+                const taskTitle = document.createElement('div');
+                taskTitle.className = 'task-title';
+                taskTitle.textContent = task.name;
+                taskContent.appendChild(taskTitle);
+
+                if (task.description) {
+                    const taskDescription = document.createElement('div');
+                    taskDescription.className = 'task-description';
+                    taskDescription.textContent = task.description;
+                    taskContent.appendChild(taskDescription);
+                }
+
+                const taskMeta = document.createElement('div');
+                taskMeta.className = 'task-meta';
+
+                const priorityBadge = document.createElement('span');
+                priorityBadge.className = `priority-badge priority-${task.priority}`;
+                priorityBadge.textContent = task.priority;
+                taskMeta.appendChild(priorityBadge);
+
+                if (task.dueDate) {
+                    const dueDateSpan = document.createElement('span');
+                    dueDateSpan.className = 'due-date';
+                    const timeRemaining = formatTimeRemaining(task.dueDate);
+                    dueDateSpan.textContent = timeRemaining;
+
+                    const now = new Date();
+                    const due = new Date(task.dueDate);
+                    const daysDiff = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+
+                    if (daysDiff < 0) {
+                        dueDateSpan.classList.add('overdue');
+                    } else if (daysDiff <= 2) {
+                        dueDateSpan.classList.add('due-soon');
+                    }
+
+                    taskMeta.appendChild(dueDateSpan);
+                }
+
+                taskContent.appendChild(taskMeta);
+                listItem.appendChild(taskContent);
+
+                const taskActions = document.createElement('div');
+                taskActions.className = 'task-actions';
+
+                // Delete button (red cross)
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '✕';
+                deleteBtn.style.background = '#e53e3e';
+                deleteBtn.onclick = () => deleteTask(task.id);
+                taskActions.appendChild(deleteBtn);
+
+                // Edit button (3 dots)
+                const editBtn = document.createElement('button');
+                editBtn.innerHTML = '⋮';
+                editBtn.className = 'edit-task-btn';
+                editBtn.title = 'Edit Task';
+                editBtn.onclick = () => openEditTaskPopup(task);
+                taskActions.appendChild(editBtn);
+
+                listItem.appendChild(taskActions);
+                taskList.appendChild(listItem);
+            });
+        }
+
+        function formatTimeRemaining(dueDate) {
+            const now = new Date();
+            const due = new Date(dueDate);
+            const daysDiff = Math.ceil((due - now) / (1000 * 60 * 60 * 24));
+
+            if (daysDiff < 0) {
+                return `${Math.abs(daysDiff)} days overdue`;
+            } else if (daysDiff === 0) {
+                return 'Due today';
+            } else if (daysDiff === 1) {
+                return 'Due tomorrow';
+            } else {
+                return `${daysDiff} days left`;
+            }
+        }
+
+        function saveTasksToStorage() {
+            localStorage.setItem('todoAppTasks', JSON.stringify(tasks));
+        }
+
+        function loadTasksFromStorage() {
+            const saved = localStorage.getItem('todoAppTasks');
+            if (saved) {
+                tasks = JSON.parse(saved);
+                // Ensure taskIdCounter is higher than existing task IDs
+                taskIdCounter = Math.max(...tasks.map(t => t.id), 0) + 1;
+            }
+            renderTasks();
+        }
+
+        // Profile elements
+        const profileAvatar = document.getElementById('profileAvatar');
+        const avatarInput = document.getElementById('avatarInput');
+        const profileNameSpan = document.getElementById('profileName');
+        const editNameBtn = document.getElementById('editNameBtn');
+        const profileNameContainer = document.getElementById('profileNameContainer');
+
+        // Profile functionality
+        let isEditingName = false;
+
+        // Avatar upload functionality
+        profileAvatar.addEventListener('click', () => {
+            avatarInput.click();
+        });
+
+        avatarInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    // Clear existing content first
+                    profileAvatar.innerHTML = '';
+
+                    // Create and add image
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Profile Avatar';
+                    profileAvatar.appendChild(img);
+
+                    // Re-add overlay for future changes
+                    const overlay = document.createElement('div');
+                    overlay.className = 'profile-avatar-overlay';
+                    overlay.textContent = 'Change Photo';
+                    profileAvatar.appendChild(overlay);
+                };
+                reader.readAsDataURL(file);
+            }
+            // Clear the input value so the same file can be selected again
+            e.target.value = '';
+        });
+
+        // Name editing functionality
+        editNameBtn.addEventListener('click', () => {
+            if (!isEditingName) {
+                startEditingName();
+            }
+        });
+
+        profileNameSpan.addEventListener('dblclick', () => {
+            if (!isEditingName) {
+                startEditingName();
+            }
+        });
+
+        function startEditingName() {
+            isEditingName = true;
+            const currentName = profileNameSpan.textContent;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'name-input';
+            input.value = currentName;
+            input.maxLength = 20;
+
+            // Replace the span with input
+            profileNameContainer.replaceChild(input, profileNameSpan);
+            input.focus();
+            input.select();
+
+            // Handle save on Enter or blur
+            const saveName = () => {
+                const newName = input.value.trim() || 'Adventurer';
+                profileNameSpan.textContent = newName;
+                profileNameContainer.replaceChild(profileNameSpan, input);
+                isEditingName = false;
+            };
+
+            input.addEventListener('blur', saveName);
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    saveName();
+                } else if (e.key === 'Escape') {
+                    // Cancel editing
+                    profileNameContainer.replaceChild(profileNameSpan, input);
+                    isEditingName = false;
+                }
+            });
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+
+                // Update active tab button
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                // Update active tab content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(targetTab).classList.add('active');
+            });
+        });
+
+        // Popup functionality
+        addTaskBtn.addEventListener('click', () => {
+            taskPopup.classList.add('show');
+            document.getElementById('taskName').focus();
+        });
+
+        cancelTaskBtn.addEventListener('click', closeTaskPopup);
+
+        taskPopup.addEventListener('click', (e) => {
+            if (e.target === taskPopup) {
+                closeTaskPopup();
+            }
+        });
+
+        // Date tab functionality
+        let selectedDate = 'none';
+        let selectedPriority = 'medium';
+
+        function updateDateTabs() {
+            const tabs = document.querySelectorAll('.date-tab-option');
+            const preview = document.getElementById('datePreview');
+            const dateInputContainer = document.getElementById('dateInputContainer');
+            const dateInput = document.getElementById('taskDueDate');
+
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.date === selectedDate) {
+                    tab.classList.add('active');
+                }
+            });
+
+            let previewText = '';
+            let actualDate = '';
+
+            switch (selectedDate) {
+                case 'none':
+                    previewText = '';
+                    actualDate = '';
+                    dateInputContainer.classList.remove('show');
+                    break;
+                case 'today':
+                    const today = new Date();
+                    previewText = `${today.toLocaleDateString()} (${today.toLocaleDateString('en-US', { weekday: 'long' })})`;
+                    actualDate = today.toISOString().split('T')[0];
+                    dateInputContainer.classList.remove('show');
+                    break;
+                case 'tomorrow':
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    previewText = `${tomorrow.toLocaleDateString()} (${tomorrow.toLocaleDateString('en-US', { weekday: 'long' })})`;
+                    actualDate = tomorrow.toISOString().split('T')[0];
+                    dateInputContainer.classList.remove('show');
+                    break;
+                case 'nextweek':
+                    const nextWeek = new Date();
+                    nextWeek.setDate(nextWeek.getDate() + 7);
+                    previewText = `${nextWeek.toLocaleDateString()} (${nextWeek.toLocaleDateString('en-US', { weekday: 'long' })})`;
+                    actualDate = nextWeek.toISOString().split('T')[0];
+                    dateInputContainer.classList.remove('show');
+                    break;
+                case 'custom':
+                    previewText = 'Select a date below';
+                    dateInputContainer.classList.add('show');
+                    actualDate = dateInput.value;
+                    break;
+            }
+
+            preview.textContent = previewText;
+            if (selectedDate !== 'custom') {
+                dateInput.value = actualDate;
+            }
+        }
+
+        function updatePriorityTabs() {
+            const tabs = document.querySelectorAll('.priority-tab-option');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.dataset.priority === selectedPriority) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Date tab event listeners
+        document.getElementById('dateTabGroup').addEventListener('click', (e) => {
+            if (e.target.classList.contains('date-tab-option')) {
+                selectedDate = e.target.dataset.date;
+                updateDateTabs();
+            }
+        });
+
+        // Priority tab event listeners
+        document.getElementById('priorityTabGroup').addEventListener('click', (e) => {
+            if (e.target.classList.contains('priority-tab-option')) {
+                selectedPriority = e.target.dataset.priority;
+                updatePriorityTabs();
+            }
+        });
+
+        // Custom date input listener
+        document.getElementById('taskDueDate').addEventListener('change', (e) => {
+            if (selectedDate === 'custom' && e.target.value) {
+                const customDate = new Date(e.target.value);
+                const preview = document.getElementById('datePreview');
+                preview.textContent = `${customDate.toLocaleDateString()} (${customDate.toLocaleDateString('en-US', { weekday: 'long' })})`;
+            }
+        });
+
+        function closeTaskPopup() {
+            taskPopup.classList.remove('show');
+            taskForm.reset();
+            editingTaskId = null;
+            // Reset popup title
+            document.querySelector('#taskPopup h3').textContent = 'Add New Task';
+            // Reset to defaults
+            selectedDate = 'none';
+            selectedPriority = 'medium';
+            updateDateTabs();
+            updatePriorityTabs();
+        }
+
+        // Task form submission
+        taskForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const taskName = document.getElementById('taskName').value.trim();
+            const taskDescription = document.getElementById('taskDescription').value.trim();
+            let taskDueDate = '';
+
+            // Get the actual date value
+            if (selectedDate !== 'none') {
+                taskDueDate = document.getElementById('taskDueDate').value;
+            }
+
+            console.log('Form submitted:', { taskName, taskDescription, taskDueDate, selectedPriority });
+
+            if (taskName) {
+                if (editingTaskId !== null) {
+                    // Update existing task
+                    updateTask(editingTaskId, taskName, taskDescription, taskDueDate, selectedPriority);
+                } else {
+                    // Add new task
+                    addTask(taskName, taskDescription, taskDueDate, selectedPriority);
+                }
+                closeTaskPopup();
+            } else {
+                alert('Please enter a task name!');
+                return false;
+            }
+        });
+
+        // --- Custom Background Image ---
+        const bgImageBtn = document.getElementById('bgImageBtn');
+        const bgImageInput = document.getElementById('bgImageInput');
+
+        // Helper to set background on both body and pseudo-element
+        function setBodyBackgroundImage(url) {
+            document.body.style.backgroundImage = url ? `url('${url}')` : '';
+            // Force update of pseudo-element by toggling a CSS variable (optional, for some browsers)
+            document.body.style.setProperty('--custom-bg', url ? `url('${url}')` : '');
+        }
+
+        // Load background from localStorage
+        function loadBackground() {
+            const bg = localStorage.getItem('todoAppBg');
+            setBodyBackgroundImage(bg);
+        }
+        loadBackground();
+
+        bgImageBtn.addEventListener('click', () => {
+            bgImageInput.click();
+        });
+
+        bgImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                setBodyBackgroundImage(ev.target.result);
+                localStorage.setItem('todoAppBg', ev.target.result);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        });
+
+        // --- Landscape image for profile-section (covers all) ---
+        const landscapeBtn = document.getElementById('landscapeBtn');
+        const landscapeInput = document.getElementById('landscapeInput');
+        const statsLandscapeBg = document.getElementById('statsLandscapeBg');
+
+        function setStatsLandscape(url) {
+            if (url) {
+                statsLandscapeBg.style.background = `url('${url}') center center/cover no-repeat`;
+                statsLandscapeBg.style.backgroundColor = '';
+                localStorage.setItem('todoAppStatsLandscape', url);
+            } else {
+                statsLandscapeBg.style.background = '';
+                statsLandscapeBg.style.backgroundColor = '#e2e8f0';
+                localStorage.removeItem('todoAppStatsLandscape');
+            }
+        }
+
+        function loadStatsLandscape() {
+            const url = localStorage.getItem('todoAppStatsLandscape');
+            setStatsLandscape(url);
+        }
+        loadStatsLandscape();
+
+        landscapeBtn.addEventListener('click', () => {
+            landscapeInput.click();
+        });
+
+        landscapeInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                setStatsLandscape(ev.target.result);
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        });
+
+        // Initialize tabs
+        updateDateTabs();
+        updatePriorityTabs();
+
+        // Load tasks and initialize display
+        loadTasksFromStorage();
+
+        // Set minimum date to today for due date input
+        document.getElementById('taskDueDate').min = new Date().toISOString().split('T')[0];
+    </script>
+
+    <!-- LOOT POPUP (floating) -->
+    <div id="lootContainer" class="loot-container" aria-hidden="true"></div>
+
+    <!-- LEVEL-UP POPUP -->
+    <div id="levelUpPopup" class="popup levelup" aria-hidden="true">
+        <div class="popup-inner">
+            <div class="star">✨</div>
+            <div class="text">Level Up!</div>
+            <div id="newLevelText" class="new-level"></div>
+        </div>
+    </div>
 
 </body>
 </html>
